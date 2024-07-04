@@ -128,6 +128,53 @@ object CaseAppTests extends TestSuite {
       assert(res == expectedRes)
     }
 
+    test("parse args recursively (2 levels)") {
+      val res = Parser[RecurseRecurseOuter].parse(Seq(
+        "--outer",
+        "4",
+        "--inner",
+        "10",
+        "--value",
+        "value",
+        "--num-foo",
+        "20"
+      ))
+      val expectedRes = Right((
+        RecurseRecurseOuter(
+          outer = 4,
+          inner =
+            RecurseRecurseInner(inner = 10, fewArgs = FewArgs(value = "value", numFoo = 20))
+        ),
+        Seq.empty
+      ))
+      assert(res == expectedRes)
+    }
+
+    test("parse a args recursively (2 levels) with a prefix added") {
+      val res = Parser[RecurseRecurseWithPrefix].parse(Seq(
+        "--outer-no-prefix",
+        "4",
+        "--inner-no-prefix",
+        "10",
+        "--inner-prefix-value",
+        "value",
+        "--inner-prefix-num-foo",
+        "20"
+      ))
+
+      println(Help[RecurseRecurseWithPrefix].help)
+
+      val expectedRes = Right((
+        RecurseRecurseWithPrefix(
+          outerNoPrefix = 4,
+          withPrefix =
+            RecurseWithPrefix(noPrefix = 10, withPrefix = FewArgs(value = "value", numFoo = 20))
+        ),
+        Seq.empty
+      ))
+      assert(res == expectedRes)
+    }
+
     test("parse args") {
       val res = Parser[demo.DemoOptions].parse(Seq(
         "user arg",

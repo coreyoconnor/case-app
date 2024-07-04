@@ -182,4 +182,19 @@ object Definitions {
     noPrefix: Int,
     @Recurse("prefix") withPrefix: FewArgs
   )
+
+  final case class RecurseRecurseInner(
+    inner: Int,
+    @Recurse fewArgs: FewArgs
+  )
+
+  final case class RecurseRecurseOuter(
+    outer: Int,
+    @Recurse inner: RecurseRecurseInner
+  )
+
+  final case class RecurseRecurseWithPrefix(
+    outerNoPrefix: Int,
+    @Recurse("inner") withPrefix: RecurseWithPrefix
+  )
 }
